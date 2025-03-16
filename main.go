@@ -61,10 +61,10 @@ func createProduct(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// Lấy MongoDB URI từ biến môi trường
+	// Lấy URI từ biến môi trường
 	mongoURI := os.Getenv("MONGODB_URI")
 	if mongoURI == "" {
-		log.Fatal("Missing MongoDB URI")
+		log.Fatal("MONGODB_URI environment variable not set")
 	}
 
 	// Kết nối MongoDB

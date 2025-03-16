@@ -2,33 +2,35 @@
 FROM golang:1.24 AS builder
 
 # Đặt thư mục làm việc
-WORKDIR /app
+WORKDIR /build
 
-# Copy tất cả files vào container
-COPY . .
-
-# Tải các thư viện
+# Copy go.mod và go.sum để tải dependency trước
+COPY go.mod go.sum ./
 RUN go mod tidy
 
-# Build ứng dụng
-RUN go build -o main .
+# Copy toàn bộ mã nguồn
+COPY . .
 
-# Runtime stage (chạy ứng dụng)
+# Build ứng dụng cho Linux (Docker chạy trên Linux kernel)
+RUN go build -o products-api
+
+# Runtime stage
 FROM alpine:latest
 
-WORKDIR /root/
+# Cài đặt các thư viện cần thiết cho runtime (để tránh lỗi "exec: no such file or directory")
+RUN apk add --no-cache libc6-compat
 
-# Cài đặt thư viện cần thiết cho runtime
-RUN apk add --no-cache ca-certificates
+# Đặt thư mục làm việc
+WORKDIR /app
 
-# Copy file đã build từ builder
-COPY --from=builder /app/main .
+# Copy file thực thi từ build stage
+COPY --from=builder /build/products-api .
 
 # Mở cổng ứng dụng
 EXPOSE 8082
 
-# Định nghĩa biến môi trường
+# Định nghĩa biến môi trường (có thể override khi chạy container)
 ENV MONGODB_URI="mongodb+srv://nguyenhungyen0000:Hungyen%402003@cluster0.qfr7n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 # Chạy ứng dụng
-CMD ["./app/main"]
+CMD ["./products-api"]
