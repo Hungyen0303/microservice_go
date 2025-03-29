@@ -11,7 +11,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-mongo_uri = os.getenv("MONGODB_URI")
+mongo_uri = "mongodb+srv://nguyenhungyen0000:Hungyen%402003@cluster0.djkgyu0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 if not mongo_uri:
     logger.error("MONGODB_URI environment variable not set")
     exit(1)
