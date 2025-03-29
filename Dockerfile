@@ -1,36 +1,20 @@
-# Build stage
-FROM golang:1.24 AS builder
+# Sử dụng image Python chính thức
+FROM python:3.9-slim
 
-# Đặt thư mục làm việc
-WORKDIR /build
-
-# Copy go.mod và go.sum để tải dependency trước
-COPY go.mod go.sum ./
-RUN go mod tidy
-
-# Copy toàn bộ mã nguồn
-COPY . .
-
-# Build ứng dụng cho Linux (Docker chạy trên Linux kernel)
-RUN go build -o products-api
-
-# Runtime stage
-FROM alpine:latest
-
-# Cài đặt các thư viện cần thiết cho runtime (để tránh lỗi "exec: no such file or directory")
-RUN apk add --no-cache libc6-compat
-
-# Đặt thư mục làm việc
+# Đặt thư mục làm việc trong container
 WORKDIR /app
 
-# Copy file thực thi từ build stage
-COPY --from=builder /build/products-api .
+# Sao chép file yêu cầu dependency (nếu có requirements.txt) hoặc cài trực tiếp
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Mở cổng ứng dụng
-EXPOSE 8082
+# Sao chép toàn bộ code vào container
+COPY . .
 
-# Định nghĩa biến môi trường (có thể override khi chạy container)
 ENV MONGODB_URI="mongodb+srv://nguyenhungyen0000:Hungyen%402003@cluster0.djkgyu0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-# Chạy ứng dụng
-CMD ["./products-api"]
+# Mở port mà Flask app chạy
+EXPOSE 8082
+
+# Lệnh chạy Flask app
+CMD ["python", "main.py"]
