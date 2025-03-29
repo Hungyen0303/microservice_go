@@ -30,7 +30,7 @@ COPY --from=builder /build/products-api .
 EXPOSE 8082
 
 # Định nghĩa biến môi trường (có thể override khi chạy container)
-ENV MONGODB_URI="mongodb+srv://nguyenhungyen0000:Hungyen%402003@cluster0.qfr7n.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+ENV MONGODB_URI="mongodb+srv://nguyenhungyen0000:Hungyen%402003@cluster0.djkgyu0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 # Chạy ứng dụng
 CMD ["./products-api"]
